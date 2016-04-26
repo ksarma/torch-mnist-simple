@@ -18,8 +18,8 @@ local testset = mnist.testdataset()
 local traindata = trainset.data
 local trainlabels = trainset.label + 1
 
-traindata:cuda()
-trainlabels:cuda()
+-- traindata:cuda()
+-- trainlabels:cuda()
 
 
 local model, criterion = createModel()

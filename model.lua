@@ -3,8 +3,10 @@
 --
 
 require 'torch'
+require 'cutorch'
 require 'nn'
 require 'cunn'
+require 'optim'
 
 -- mnist inputs are 28 x 28
 
@@ -30,11 +32,11 @@ function createModel()
 
     model:add(nn.LogSoftMax())
 
-    model:cuda()
+--    model:cuda()
 
     -- important: classes are expected to labeled starting at 1, not zero as mnist is by default
     local criterion = nn.ClassNLLCriterion()
-    criterion:cuda()
+--    criterion:cuda()
 
     return model, criterion
 
