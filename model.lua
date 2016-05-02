@@ -24,19 +24,24 @@ function createModel()
 
     model:add(nn.SpatialAveragePooling(2, 2, 2, 2))
 
-    -- output 10 x 9 x 9
+    -- output 10 x 10 x 10
 
-    model:add(nn.View(10 * 9 * 9))
+    model:add(nn.View(10 * 10 * 10))
 
-    model:add(nn.Linear(10 * 9 * 9, 10))
+    model:add(nn.Linear(10 * 10 * 10, 10))
 
     model:add(nn.LogSoftMax())
 
+    -- We need to be either cuda or float since that what the input data is shaped as
 --    model:cuda()
+    model:float()
 
     -- important: classes are expected to labeled starting at 1, not zero as mnist is by default
     local criterion = nn.ClassNLLCriterion()
+
+    -- We need to be either cuda or float since that what the input data is shaped as
 --    criterion:cuda()
+    criterion:float()
 
     return model, criterion
 

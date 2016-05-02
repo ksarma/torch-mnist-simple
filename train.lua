@@ -18,8 +18,23 @@ local testset = mnist.testdataset()
 local traindata = trainset.data
 local trainlabels = trainset.label + 1
 
+-- The model expects input to be of the size nSamples x nChannels x dim x dim
+-- but since we have only one channel the input tensor is missing the 2nd dimension.
+-- We can add it here using resize
+traindata = traindata:resize(60000, 1, 28, 28)
+
+-- This only considers the first 100 samples, which is necessary to avoid having to load
+-- everything at once. A better way to handle this is to use minibatches.
+traindata = traindata[{{1, 100}}]
+trainlabels = trainlabels[{{1, 100}}]
+
+
+-- Here we either convert to cuda or to float; we need one or the other because
+-- most operations are only valid on doubles or floats (cuda is a type of float)
 -- traindata:cuda()
 -- trainlabels:cuda()
+traindata = traindata:float()
+trainlabels = trainlabels:float()
 
 
 local model, criterion = createModel()
@@ -41,7 +56,6 @@ function train()
 
         local params, grads = model:getParameters()
 
-
         local err, outputs
 
         local feval = function(x)
@@ -61,7 +75,7 @@ function train()
         local top1 = 0
         do
            local _,prediction_sorted = outputs:float():sort(2, true) -- descending
-           for i=1,60000 do
+           for i=1,100 do
                if prediction_sorted[i][1] == trainlabels[i] then
                    top1 = top1 + 1
                end
