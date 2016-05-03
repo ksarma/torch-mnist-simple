@@ -25,8 +25,8 @@ traindata = traindata:resize(60000, 1, 28, 28)
 
 -- This only considers the first 100 samples, which is necessary to avoid having to load
 -- everything at once. A better way to handle this is to use minibatches.
-traindata = traindata[{{1, 100}}]
-trainlabels = trainlabels[{{1, 100}}]
+--traindata = traindata[{{1, 100}}]
+--trainlabels = trainlabels[{{1, 100}}]
 
 
 -- Here we either convert to cuda or to float; we need one or the other because
@@ -42,6 +42,8 @@ local model, criterion = createModel()
 print(model)
 
 
+BATCH_SIZE = 1000
+
 function train()
 
     model:training()
@@ -54,23 +56,32 @@ function train()
 
     while (epoch <= 3) do
 
-        local params, grads = model:getParameters()
+        -- Shuffle
+        local r = torch.randperm(trainlabels:size()):long()
+        local rand_data = traindata:index(1, r)
+        local rand_labels = trainlabels:index(1, r)
 
-        local err, outputs
+        for i=1,trainlabels:size(),BATCH_SIZE do
+            local params, grads = model:getParameters()
 
-        local feval = function(x)
+            local err, outputs
 
-            model:zeroGradParameters()
-            outputs = model:forward(traindata)
-            err = criterion:forward(outputs, trainlabels)
-            local gradOutputs = criterion:backward(outputs, trainlabels)
-            model:backward(traindata, gradOutputs)
-            return err, grads
+            local batch_data = rand_data[{{i,i+BATCH_SIZE-1},{}}]
+            local batch_labels = rand_labels[{{i,i+BATCH_SIZE-1},{}}]
 
+            local feval = function(x)
+
+                model:zeroGradParameters()
+                outputs = model:forward(batch_data)
+                err = criterion:forward(outputs, batch_labels)
+                local gradOutputs = criterion:backward(outputs, batch_labels)
+                model:backward(batch_data, gradOutputs)
+                return err, grads
+
+            end
+
+            optim.adadelta(feval, params, {})
         end
-
-        optim.adadelta(feval, params, {})
-
 
         local top1 = 0
         do
