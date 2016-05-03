@@ -52,8 +52,8 @@ function train()
 
         -- Shuffle
         local r = torch.randperm(NUM_SAMPLES):long()
-        local rand_data = traindata:index(1, r)
-        local rand_labels = trainlabels:index(1, r)
+        local rand_data = traindata:index(1, r):cuda()
+        local rand_labels = trainlabels:index(1, r):cuda()
 
         for i=1,NUM_SAMPLES,BATCH_SIZE do
             print("Training minibatch starting at " .. i)

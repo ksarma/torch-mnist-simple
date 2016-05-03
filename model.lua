@@ -33,15 +33,15 @@ function createModel()
     model:add(nn.LogSoftMax())
 
     -- We need to be either cuda or float since that what the input data is shaped as
---    model:cuda()
-    model:float()
+    model:cuda()
+--    model:float()
 
     -- important: classes are expected to labeled starting at 1, not zero as mnist is by default
     local criterion = nn.ClassNLLCriterion()
 
     -- We need to be either cuda or float since that what the input data is shaped as
---    criterion:cuda()
-    criterion:float()
+    criterion:cuda()
+--    criterion:float()
 
     return model, criterion
 
