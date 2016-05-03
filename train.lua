@@ -23,12 +23,6 @@ local trainlabels = trainset.label + 1
 -- We can add it here using resize
 traindata = traindata:resize(60000, 1, 28, 28)
 
--- This only considers the first 100 samples, which is necessary to avoid having to load
--- everything at once. A better way to handle this is to use minibatches.
---traindata = traindata[{{1, 100}}]
---trainlabels = trainlabels[{{1, 100}}]
-
-
 -- Here we either convert to cuda or to float; we need one or the other because
 -- most operations are only valid on doubles or floats (cuda is a type of float)
 -- traindata:cuda()
@@ -61,13 +55,15 @@ function train()
         local rand_data = traindata:index(1, r)
         local rand_labels = trainlabels:index(1, r)
 
-        for i=1,trainlabels:size(),BATCH_SIZE do
-            local params, grads = model:getParameters()
+        for i=1,NUM_SAMPLES,BATCH_SIZE do
+            print("Training minibatch starting at " .. i)
+	    
+	    local params, grads = model:getParameters()
 
             local err, outputs
 
             local batch_data = rand_data[{{i,i+BATCH_SIZE-1},{}}]
-            local batch_labels = rand_labels[{{i,i+BATCH_SIZE-1},{}}]
+            local batch_labels = rand_labels[{{i,i+BATCH_SIZE-1}}]
 
             local feval = function(x)
 
