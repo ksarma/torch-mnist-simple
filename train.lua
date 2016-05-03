@@ -48,7 +48,7 @@ function train()
 
     print("Training epoch " .. epoch)
 
-    while (epoch <= 3) do
+    while (epoch <= 10) do
 
         -- Shuffle
         local r = torch.randperm(NUM_SAMPLES):long()
@@ -56,7 +56,7 @@ function train()
         local rand_labels = trainlabels:index(1, r):cuda()
 
         for i=1,NUM_SAMPLES,BATCH_SIZE do
-            print("Training minibatch starting at " .. i)
+            -- print("Training minibatch starting at " .. i)
 	    
     	    local params, grads = model:getParameters()
 
@@ -82,15 +82,15 @@ function train()
             local top1 = 0
             do
                local _,prediction_sorted = outputs:float():sort(2, true) -- descending
-               for i=1,100 do
-                   if prediction_sorted[i][1] == trainlabels[i] then
+               for i=1,BATCH_SIZE do
+                   if prediction_sorted[i][1] == batch_labels[i] then
                        top1 = top1 + 1
                    end
                end
-               top1 = top1 * 100 / 60000;
+               top1 = top1 * 100 / BATCH_SIZE;
             end
 
-            print(("Epoch: " .. epoch .. " Top1-%%: %.2f"):format(top1))
+            print(("Epoch:" .. epoch .. " Minibatch start: " .. i .. " Top1-%%: %.2f"):format(top1))
         end
         epoch = epoch + 1
     end
