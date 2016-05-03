@@ -41,7 +41,7 @@ local model, criterion = createModel()
 
 print(model)
 
-
+NUM_SAMPLES = 60000
 BATCH_SIZE = 1000
 
 function train()
@@ -57,7 +57,7 @@ function train()
     while (epoch <= 3) do
 
         -- Shuffle
-        local r = torch.randperm(trainlabels:size()):long()
+        local r = torch.randperm(NUM_SAMPLES):long()
         local rand_data = traindata:index(1, r)
         local rand_labels = trainlabels:index(1, r)
 
