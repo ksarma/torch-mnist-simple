@@ -58,7 +58,7 @@ function train()
         for i=1,NUM_SAMPLES,BATCH_SIZE do
             print("Training minibatch starting at " .. i)
 	    
-	    local params, grads = model:getParameters()
+    	    local params, grads = model:getParameters()
 
             local err, outputs
 
